@@ -1,20 +1,52 @@
 import { Link } from "react-router-dom";
-// import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-// const urlBase = "https://playground.4geeks.com/contact"
+
+const EstadoInicial = {
+
+    name: "",
+    phone: "",
+    email: "",
+    address: ""
+};
+
+const urlBase = "https://playground.4geeks.com/contact"
 
 export const AddNewContact = () => {
 
-    // const [info, setInfo] = useState({
+    const [info, setInfo] = useState(EstadoInicial);
 
-    //     name: "",
-    //     phone: "",
-    //     email: "",
-    //     address: ""
-    // })
+    const [contacto, setContacto] = useState([]);
+
+    const [cargando, setCargando] = useState(false);
 
 
+
+      useEffect(() => {
+    console.log("useEffect: Montando componente y cargando contactos iniciales...");
+    const fetchContactos = async () => {
+      try {
+        const response = await fetch(`${urlBase}/agendas/tonino`);
+        console.log("fetchContactos: Respuesta recibida", response);
+
+        const data = await response.json();
+        console.log("fetchContactos: Datos recibidos y traducidos", data);
+        setContacto(data);
+
+      } catch (error) {
+        console.error(error);
+
+      }
+    };
+
+    fetchContactos();
+  }, []);
+
+  const handleOnChange = (event) => {
+    const {name, value} = event.target;
+    console.log(`esto es name: ${name} y esto es value: ${value}`)
     
+  }
 
     return (
         <div>
@@ -23,34 +55,38 @@ export const AddNewContact = () => {
                 <div className="row">
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label">Full Name</label>
+                            <label for="exampleFormControlInput1" className="form-label">Full Name</label>
                             <input type="email"
-
-                                class="form-control" id="exampleFormControlInput1" placeholder="Full Name" />
+                                name="name"
+                                onChange={handleOnChange}
+                                className="form-control" id="exampleFormControlInput1" placeholder="Full Name" />
                         </div>
                     </div>
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label">Email</label>
+                            <label for="exampleFormControlInput1" className="form-label">Email</label>
                             <input type="email"
-
-                                class="form-control" id="exampleFormControlInput1" placeholder="Enter email" />
+                                name="email"
+                                onChange={handleOnChange}
+                                className="form-control" id="exampleFormControlInput1" placeholder="Enter email" />
                         </div>
                     </div>
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label">Phone</label>
+                            <label for="exampleFormControlInput1" className="form-label">Phone</label>
                             <input type="email"
-
-                                class="form-control" id="exampleFormControlInput1" placeholder="Enter Phone" />
+                                name="phone"
+                                onChange={handleOnChange}
+                                className="form-control" id="exampleFormControlInput1" placeholder="Enter Phone" />
                         </div>
                     </div>
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label">Address</label>
+                            <label for="exampleFormControlInput1" className="form-label">Address</label>
                             <input type="email"
-                               
-                                class="form-control" id="exampleFormControlInput1" placeholder="Enter address" />
+                                name="address"
+                                onChange={handleOnChange}
+                                className="form-control" id="exampleFormControlInput1" placeholder="Enter address" />
                         </div>
                     </div>
                     <button
