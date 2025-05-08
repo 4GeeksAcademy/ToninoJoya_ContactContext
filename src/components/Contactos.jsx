@@ -4,9 +4,9 @@ export const Contactos = () => {
 
 
 	return (
-		<div className="container">
+		<div className="container p-1">
 			<div className="row justify-conteent-end">
-				<div className="col-12">
+				<div className="col-12 p-0">
 					<div className="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
 						<Link to="/AddNewContact">
 							<button className="btn btn-success me-md-2" type="button">Add New Contact</button>

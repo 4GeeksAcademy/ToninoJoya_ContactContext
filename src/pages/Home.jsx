@@ -1,4 +1,5 @@
 import rigoImageUrl from "../assets/img/rigo-baby.jpg";
+import { Contactos } from "../components/Contactos.jsx";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 export const Home = () => {
@@ -6,7 +7,8 @@ export const Home = () => {
 	const { store, dispatch } = useGlobalReducer()
 
 	return (
-		
+		<>
+		<Contactos/>
 		<div className="container">
 			<div className="row border mt-3">
 				<div className="col-8 mt-3 d-flex justify-content-start">
@@ -28,6 +30,7 @@ export const Home = () => {
 				</div>
 			</div>
 		</div>
+		</>
 
 	);
 }; 
