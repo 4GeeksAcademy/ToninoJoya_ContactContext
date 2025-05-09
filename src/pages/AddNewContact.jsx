@@ -14,82 +14,71 @@ const urlBase = "https://playground.4geeks.com/contact"
 
 export const AddNewContact = () => {
 
-    const [info, setInfo] = useState(EstadoInicial);
+    const [infoContacto, setInfoContacto] = useState(EstadoInicial);
 
     const [contacto, setContacto] = useState([]);
 
 
 
-
-
-
-    const fetchContactos = async () => {
-        try {
-            const response = await fetch(`${urlBase}/agendas/${slug}`);
-            console.log("fetchContactos: Respuesta recibida", response);//Puede ser 200  o 400
-            const data = await response.json();// Traducimos datos
-            console.log("fetchContactos: Datos recibidos y traducidos", data);
-            if(response.ok){
-                setContacto(data)
-            }
-            if (respuesta.status == 404){
-                console.log("crear el usuario")
-                createContact();
-            }
-
-        } catch (error) {
-            console.error(error);
-
-        }
-    };
-
-    useEffect(() => {
-        fetchContactos()
-    }, [])
-
-    const createContact = async (slug) =>{
-        try {
-            const response = await fetch(`${urlBase}/agendas/${slug}`, {
-                method: "POST"
-            })
-            console.log(response)
-            
-        } catch (error) {
-           console.log(error) 
-        }
-    }
-
     const handleOnChange = (event) => {
 
-        console.log({ [event.target.name]: event.target.value })
-        setInfo({
-            ...info,
+        setInfoContacto({
+            ...infoContacto,
             [event.target.name]: event.target.value
         });
+    }
+
+    const CrearAgendaContacto = async () => {
+
+        if(!infoContacto.name ?? infoContacto.name.trim()===" "){
+            console.log("Este campo es requerido")
+            return null
+        }
+
+        try {
+            const response = await fetch(`${urlBase}/agendas/${infoContacto.name}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            });
+
+            if (response.ok) {
+               const agendaCreadaEnApi = await response.json();
+                console.log("se creo el usuario correctamente:",agendaCreadaEnApi)
+                return agendaCreadaEnApi
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const addInfo = async (event) => {
         if (event.target.name == "save") {
             try {
-                const response = await fetch(`${urlBase}/agendas/tonino/contacts`, {
-                    method: "POST",
+                const response = await fetch(`${urlBase}/agendas/${infoContacto.name}/contacts`, {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json"
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
-                })
+                    body: JSON.stringify(infoContacto)
+                });
+
                 if (response.ok) {
-                    fetchContactos()
                     setContacto([
                         ...contacto,
-                        info
+                        infoContacto
                     ]);
+                    setInfoContacto(EstadoInicial);
+                } if (response.status == 404) {
+                    console.log("crear el usuario")
+                    CrearAgendaContacto()
                 }
             } catch (error) {
                 console.log(error)
             }
-            console.log("Contacto añadido:", info);
-            console.log("Lista de contactos actualizada:", [...contacto, info]);
+
         };
     };
 
@@ -101,7 +90,8 @@ export const AddNewContact = () => {
                     <div className="col-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Full Name</label>
-                            <input type="email"
+                            <input
+                                value={infoContacto.name}
                                 name="name"
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Full Name" />
@@ -110,7 +100,8 @@ export const AddNewContact = () => {
                     <div className="col-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Email</label>
-                            <input type="email"
+                            <input
+                                value={infoContacto.email}
                                 name="email"
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter email" />
@@ -119,7 +110,8 @@ export const AddNewContact = () => {
                     <div className="col-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Phone</label>
-                            <input type="email"
+                            <input
+                                value={infoContacto.phone}
                                 name="phone"
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter Phone" />
@@ -128,8 +120,10 @@ export const AddNewContact = () => {
                     <div className="col-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Address</label>
-                            <input type="email"
+                            <input
+                                value={infoContacto.address}
                                 name="address"
+
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter address" />
                         </div>
@@ -140,12 +134,7 @@ export const AddNewContact = () => {
                         onClick={addInfo}
                         className="col-12 btn btn-primary text-center">save</button>
                 </div>
-                <button
-                        type="button"
-                        name="save"
-                        onClick={createContact}
-                        className="col-12 btn btn-primary text-center">save</button>
-               
+
                 <Link to="/">
                     <span className="primary">or get back to contacts</span>
                 </Link>
