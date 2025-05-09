@@ -18,35 +18,80 @@ export const AddNewContact = () => {
 
     const [contacto, setContacto] = useState([]);
 
-    const [cargando, setCargando] = useState(false);
 
 
 
-      useEffect(() => {
-    console.log("useEffect: Montando componente y cargando contactos iniciales...");
+
+
     const fetchContactos = async () => {
-      try {
-        const response = await fetch(`${urlBase}/agendas/tonino`);
-        console.log("fetchContactos: Respuesta recibida", response);
+        try {
+            const response = await fetch(`${urlBase}/agendas/${slug}`);
+            console.log("fetchContactos: Respuesta recibida", response);//Puede ser 200  o 400
+            const data = await response.json();// Traducimos datos
+            console.log("fetchContactos: Datos recibidos y traducidos", data);
+            if(response.ok){
+                setContacto(data)
+            }
+            if (respuesta.status == 404){
+                console.log("crear el usuario")
+                createContact();
+            }
 
-        const data = await response.json();
-        console.log("fetchContactos: Datos recibidos y traducidos", data);
-        setContacto(data);
+        } catch (error) {
+            console.error(error);
 
-      } catch (error) {
-        console.error(error);
-
-      }
+        }
     };
 
-    fetchContactos();
-  }, []);
+    useEffect(() => {
+        fetchContactos()
+    }, [])
 
-  const handleOnChange = (event) => {
-    const {name, value} = event.target;
-    console.log(`esto es name: ${name} y esto es value: ${value}`)
-    
-  }
+    const createContact = async (slug) =>{
+        try {
+            const response = await fetch(`${urlBase}/agendas/${slug}`, {
+                method: "POST"
+            })
+            console.log(response)
+            
+        } catch (error) {
+           console.log(error) 
+        }
+    }
+
+    const handleOnChange = (event) => {
+
+        console.log({ [event.target.name]: event.target.value })
+        setInfo({
+            ...info,
+            [event.target.name]: event.target.value
+        });
+    }
+
+    const addInfo = async (event) => {
+        if (event.target.name == "save") {
+            try {
+                const response = await fetch(`${urlBase}/agendas/tonino/contacts`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                if (response.ok) {
+                    fetchContactos()
+                    setContacto([
+                        ...contacto,
+                        info
+                    ]);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+            console.log("Contacto añadido:", info);
+            console.log("Lista de contactos actualizada:", [...contacto, info]);
+        };
+    };
 
     return (
         <div>
@@ -55,7 +100,7 @@ export const AddNewContact = () => {
                 <div className="row">
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" className="form-label">Full Name</label>
+                            <label className="form-label">Full Name</label>
                             <input type="email"
                                 name="name"
                                 onChange={handleOnChange}
@@ -64,7 +109,7 @@ export const AddNewContact = () => {
                     </div>
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" className="form-label">Email</label>
+                            <label className="form-label">Email</label>
                             <input type="email"
                                 name="email"
                                 onChange={handleOnChange}
@@ -73,7 +118,7 @@ export const AddNewContact = () => {
                     </div>
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" className="form-label">Phone</label>
+                            <label className="form-label">Phone</label>
                             <input type="email"
                                 name="phone"
                                 onChange={handleOnChange}
@@ -82,7 +127,7 @@ export const AddNewContact = () => {
                     </div>
                     <div className="col-12 p-0">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" className="form-label">Address</label>
+                            <label className="form-label">Address</label>
                             <input type="email"
                                 name="address"
                                 onChange={handleOnChange}
@@ -91,8 +136,16 @@ export const AddNewContact = () => {
                     </div>
                     <button
                         type="button"
+                        name="save"
+                        onClick={addInfo}
                         className="col-12 btn btn-primary text-center">save</button>
                 </div>
+                <button
+                        type="button"
+                        name="save"
+                        onClick={createContact}
+                        className="col-12 btn btn-primary text-center">save</button>
+               
                 <Link to="/">
                     <span className="primary">or get back to contacts</span>
                 </Link>
