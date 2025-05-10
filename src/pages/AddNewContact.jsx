@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 
 
 const EstadoInicial = {
@@ -30,7 +30,7 @@ export const AddNewContact = () => {
 
     const CrearAgendaContacto = async () => {
 
-        if(!infoContacto.name ?? infoContacto.name.trim()===" "){
+        if(!infoContacto.name ?? infoContacto.name.trim()==" "){
             console.log("Este campo es requerido")
             return null
         }
@@ -41,7 +41,6 @@ export const AddNewContact = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({})
             });
 
             if (response.ok) {
@@ -87,7 +86,7 @@ export const AddNewContact = () => {
             <div className="container">
                 <h1 className="text-center mt-5">Add a new contact</h1>
                 <div className="row">
-                    <div className="col-12 p-0">
+                    <div className="col-lg-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Full Name</label>
                             <input
@@ -97,7 +96,7 @@ export const AddNewContact = () => {
                                 className="form-control" id="exampleFormControlInput1" placeholder="Full Name" />
                         </div>
                     </div>
-                    <div className="col-12 p-0">
+                    <div className="col-lg-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Email</label>
                             <input
@@ -107,7 +106,7 @@ export const AddNewContact = () => {
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter email" />
                         </div>
                     </div>
-                    <div className="col-12 p-0">
+                    <div className="col-lg-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Phone</label>
                             <input
@@ -117,7 +116,7 @@ export const AddNewContact = () => {
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter Phone" />
                         </div>
                     </div>
-                    <div className="col-12 p-0">
+                    <div className="col-lg-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Address</label>
                             <input
