@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import rigoImageUrl from "../assets/img/rigo-baby.jpg";
 import { Contactos } from "../components/Contactos.jsx";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { Link } from "react-router-dom";
+
 
 
 const urlBase = "https://playground.4geeks.com/contact"
@@ -11,19 +13,44 @@ export const Home = () => {
 	const { store, dispatch } = useGlobalReducer()
 
 	//hacer funcio para traer lista de contactos. 
-	const [listaContactos, SetListaContactos] = useState([])
+	const [listaContactos, setListaContactos] = useState([])
+
+
+	 const crearAgendaContacto = async () =>{
+
+        try {
+            const response = await fetch(`${store.urlBase}/Tatiana`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+				console.log("Error al crear el usuario")
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 
 
 
-
-	const ObtenerListaContactos = async () => {
+	const obtenerListaContactos = async () => {
 		try {
-			const response = await fetch(`${urlBase}/agendas/Tatiana/contacts`)
+			const response = await fetch(`${store.urlBase}/Tatiana/contacts`)
 			if (response.ok) {
 				const data = await response.json();
+				dispatch({
+					type: "SET_CONTACTS",
+					payload: data.contacts
+				})
 				console.log(`se logro obtener los contactos`, data.contacts)
-				SetListaContactos(data.contacts)
+				
+			}
+			if(response.status == 404){
+				crearAgendaContacto()
 			}
 		} catch (error) {
 			console.log(error)
@@ -33,16 +60,13 @@ export const Home = () => {
 	const borrarEsteContacto = async (idDelContactoABorrar) => {
 
 		try {
-			const response = await fetch(`${urlBase}/agendas/Tatiana/contacts/${idDelContactoABorrar}`, {
+			const response = await fetch(`${store.urlBase}/Tatiana/contacts/${idDelContactoABorrar}`, {
 				method: "DELETE"
 			});
 
-			if (response.ok && response.status === 204) { // 204 No Content es éxito
-				console.log(`Contacto ${idDelContactoABorrar} borrado exitosamente.`);
-				// Actualizar el estado local (ej: DatosContacto) para quitarlo de la UI
-				SetListaContactos(prevContactos =>
-					prevContactos.filter(contacto => contacto.id !== idDelContactoABorrar)
-				);
+			if (response.ok) { 
+				console.log(`el id ${idDelContactoABorrar} borrado exitosamente.`);
+				obtenerListaContactos();
 			}
 		} catch (error) {
 			console.error("Error de red al borrar contacto:", error);
@@ -53,16 +77,16 @@ export const Home = () => {
 
 
 	useEffect(() => {
-		ObtenerListaContactos()
+		obtenerListaContactos()
 	}, [])
 
 	return (
 		<>
 			<Contactos />
 			<div className="container">
-				{listaContactos.map((contacto, id) => {
+				{store.contacts.map((contacto) => {
 					return (<div className="row border mt-3 p-2"
-						key={id}>
+						key={contacto.id}>
 						<div className="col-12 col-md-8 mt-3 d-flex  flex-column flex-sm-row align-items-center align-items-sm-start">
 							<img src={rigoImageUrl} className="img-fluid w-25 w-sm-25 rounded-circle p-2 mb-3 mb-sm-0 me-sm-3" />
 							<div className="p-2">
@@ -74,12 +98,12 @@ export const Home = () => {
 						</div>
 						<div className="col-4 mt-3 d-flex col-12 col-md-4 mt-3 d-flex justify-content-center justify-content-md-end align-items-start">
 							<div className="p-2 mx-3">
-								<i className="fa-solid fa-trash-can"
+								<i className="fa-solid fa-trash-can btn"
 									onClick={() => borrarEsteContacto(contacto.id)}
 								></i>
 							</div>
 							<div className="p-2 mx-3">
-								<i className="fa-solid fa-pencil"></i>
+								<Link to={`edit-contact/${contacto.id}`}><i className="fa-solid fa-pencil text-dark"></i></Link>
 							</div>
 						</div>
 					</div>)

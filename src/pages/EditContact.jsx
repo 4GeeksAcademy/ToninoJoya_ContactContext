@@ -1,48 +1,44 @@
-import { Link } from "react-router-dom";
-import { useState} from "react";
-import useGlobalReducer from "../hooks/useGlobalReducer";
+import { Link, useParams } from "react-router-dom"
+import { useState, useEffect } from "react"
+import useGlobalReducer from "../hooks/useGlobalReducer"
 
-
-const estadoInicial = {
-
+const initialState = {
     name: "",
-    phone: "",
     email: "",
-    address: ""
-};
+    phone: "",
+    address:""
+}
 
-const urlBase = "https://playground.4geeks.com/contact"
-
-export const AddNewContact = () => {
-
+export const EditContact = () => {
+    
 
     const {store, dispatch} = useGlobalReducer()
+    
+    const [editContact, setEditContact]= useState(initialState)
+    const { theId } = useParams()
 
-    const [infoContacto, setInfoContacto] = useState(estadoInicial);
+     const handleOnChange = (event) => {
 
-
-
-    const handleOnChange = (event) => {
-
-        setInfoContacto({
-            ...infoContacto,
+        setEditContact({
+            ...editContact,
             [event.target.name]: event.target.value
         });
     }
 
 
-    const addInfo = async (event) => {
+    const editInfoContact = async (event) => {
         if (event.target.name == "save") {
             try {
-                const response = await fetch(`${store.urlBase}/Tatiana/contacts`, {
-                    method: 'POST',
+                const response = await fetch(`${store.urlBase}/Tatiana/contacts/${theId}`, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(infoContacto)
+                    body: JSON.stringify(editContact)
                 });
                 if (response.ok) {
-                    setInfoContacto(estadoInicial);
+                    const data = await response.json()
+                    setEditContact(data);
                 }
             } catch (error) {
                 console.log(error)
@@ -51,16 +47,28 @@ export const AddNewContact = () => {
         };
     };
 
+    useEffect(()=>{
+        if (store.contacts && store.contacts.length > 0 && theId) {
+        
+        const contactToEdit = store.contacts.find(
+            (contact) => String(contact.id) === String(theId) 
+        );
+        if (contactToEdit) {
+            setEditContact(contactToEdit);
+        }
+    }
+    },[theId, store.contacts])
+
     return (
         <div>
             <div className="container">
-                <h1 className="text-center mt-5">Add a new contact</h1>
+                <h1 className="text-center mt-5"> Edit contact</h1>
                 <div className="row">
                     <div className="col-lg-12 p-0">
                         <div className="mb-3">
                             <label className="form-label">Full Name</label>
                             <input
-                                value={infoContacto.name}
+                                value={editContact.name}
                                 name="name"
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Full Name" />
@@ -70,7 +78,7 @@ export const AddNewContact = () => {
                         <div className="mb-3">
                             <label className="form-label">Email</label>
                             <input
-                                value={infoContacto.email}
+                                value={editContact.email}
                                 name="email"
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter email" />
@@ -80,7 +88,7 @@ export const AddNewContact = () => {
                         <div className="mb-3">
                             <label className="form-label">Phone</label>
                             <input
-                                value={infoContacto.phone}
+                                value={editContact.phone}
                                 name="phone"
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter Phone" />
@@ -90,18 +98,18 @@ export const AddNewContact = () => {
                         <div className="mb-3">
                             <label className="form-label">Address</label>
                             <input
-                                value={infoContacto.address}
+                                value={editContact.address}
                                 name="address"
 
                                 onChange={handleOnChange}
                                 className="form-control" id="exampleFormControlInput1" placeholder="Enter address" />
                         </div>
                     </div>
-                    <Link
+                      <Link
                         to="/"
                         type="button"
                         name="save"
-                        onClick={addInfo}
+                        onClick={editInfoContact}
                         className="col-12 btn btn-primary text-center">save</Link>
                 </div>
 
@@ -112,4 +120,4 @@ export const AddNewContact = () => {
         </div>
 
     )
-};
+}
